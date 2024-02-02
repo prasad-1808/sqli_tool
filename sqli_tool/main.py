@@ -1,0 +1,85 @@
+import requests
+from bs4 import BeautifulSoup
+import display
+import argparse
+import sqli_payloads
+
+common_input_fields = ['name','username','uname','login','pass','passwd','password']
+
+def readfile(inputfile):
+    with open(inputfile,'r') as file:
+        for url in file.readlines():
+            url = url.strip()
+            scanner(url)
+
+def writefile(vuln_url,outputfile):
+    with open(outputfile,'a') as file:
+        file.write(vuln_url)
+
+classic_payloads = sqli_payloads.classic_payloads
+time_based_payload = sqli_payloads.time_based_payloads
+
+def scanner(url):
+    response = requests.get(url)
+    html_content = response.text
+    input_field_in_url = []
+    print(url+" : \n")
+    soup = BeautifulSoup(html_content,'html.parser')
+    input_fields = soup.find_all('input')
+    for input_field in input_fields:
+        name_attribute = input_field.get('name')
+        for name in common_input_fields:
+            try:
+                if name in name_attribute:
+                    input_field_in_url.append(name_attribute)
+                    break
+            except:
+                pass
+    check_form = {}
+    for field in input_field_in_url:
+        check_form[field] = 1
+    
+    check_response = requests.post(url,data=check_form)
+    wrong_status_code_eg = check_response.status_code
+
+    print("Checking for classic sqli...\n")
+    for payload in classic_payloads:
+        form = {}
+        for field in input_field_in_url:
+            form[field] = payload
+
+        response = requests.post(url,data=form)
+        if wrong_status_code_eg == response.status_code:
+            print(url+" is not vulnerable to this payload "+payload)
+    
+
+parser = argparse.ArgumentParser(add_help=False, usage=argparse.SUPPRESS)
+
+parser.add_argument('-h','--help',nargs='?',const=True,help="Display help option.")
+parser.add_argument('-u','--url',metavar='URL to scan')
+parser.add_argument('-i','--input',metavar='input_file to scan',help="Pass input file name")
+parser.add_argument('-o','--output',metavar='output_file to write result',help="Pass the output file name")
+
+args = parser.parse_args()
+
+help = args.help
+url = args.url
+inputfile = args.input
+outputfile = args.output
+
+
+
+def main():
+    if help:
+        display.help_banner()
+    elif url:
+        display.display_tool_name()
+        scanner(url)
+    elif inputfile:
+        display.display_tool_name()
+        readfile(inputfile)
+    else:
+        display.help_banner()
+
+if __name__=="__main__":
+    main()

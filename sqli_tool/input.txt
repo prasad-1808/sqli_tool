@@ -1,0 +1,3 @@
+https://skillrack.com/faces/ui/profile.xhtml
+https://github.com/login
+https://www.hackerrank.com/auth/login
