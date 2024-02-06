@@ -19,38 +19,47 @@ def writefile(vuln_url,outputfile):
 classic_payloads = sqli_payloads.classic_payloads
 time_based_payload = sqli_payloads.time_based_payloads
 
+print(classic_payloads)
+
 def scanner(url):
-    response = requests.get(url)
-    html_content = response.text
-    input_field_in_url = []
-    print(url+" : \n")
-    soup = BeautifulSoup(html_content,'html.parser')
-    input_fields = soup.find_all('input')
-    for input_field in input_fields:
-        name_attribute = input_field.get('name')
-        for name in common_input_fields:
-            try:
-                if name in name_attribute:
-                    input_field_in_url.append(name_attribute)
-                    break
-            except:
-                pass
-    check_form = {}
-    for field in input_field_in_url:
-        check_form[field] = 1
-    
-    check_response = requests.post(url,data=check_form)
-    wrong_status_code_eg = check_response.status_code
-
-    print("Checking for classic sqli...\n")
-    for payload in classic_payloads:
-        form = {}
+    try:
+        response = requests.get(url)
+        html_content = response.text
+        input_field_in_url = []
+        soup = BeautifulSoup(html_content,'html.parser')
+        input_fields = soup.find_all('input')
+        for input_field in input_fields:
+            name_attribute = input_field.get('name')
+            for name in common_input_fields:
+                try:
+                    if name in name_attribute:
+                        input_field_in_url.append(name_attribute)
+                        break
+                except:
+                    pass
+        check_form = {}
         for field in input_field_in_url:
-            form[field] = payload
+            check_form[field] = 1
+        
+        check_response = requests.post(url,data=check_form)
+        wrong_status_code_eg = check_response.status_code
+        sql_errors = ['sql','SQL','Sql','SELECT','select','sql_error']
 
-        response = requests.post(url,data=form)
-        if wrong_status_code_eg == response.status_code:
-            print(url+" is not vulnerable to this payload "+payload)
+        print(f"Checking for error based sqli in {url}...\n",url)
+        for payload in classic_payloads:
+            form = {}
+            for field in input_field_in_url:
+                form[field] = payload
+
+            response = requests.post(url,data=form)
+            for error in sql_errors:
+                if error in response:
+                    print("Vulnerable URL -->", url)
+                    print("Vulnerable Parameters -->", *input_field)
+                    writefile(url,outputfile="output.txt")
+    except:
+        print("Connection Error: Check the Network and URL.")
+
     
 
 parser = argparse.ArgumentParser(add_help=False, usage=argparse.SUPPRESS)
@@ -80,6 +89,7 @@ def main():
         readfile(inputfile)
     else:
         display.help_banner()
+        
 
 if __name__=="__main__":
     main()
