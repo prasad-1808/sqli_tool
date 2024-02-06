@@ -19,8 +19,6 @@ def writefile(vuln_url,outputfile):
 classic_payloads = sqli_payloads.classic_payloads
 time_based_payload = sqli_payloads.time_based_payloads
 
-print(classic_payloads)
-
 def scanner(url):
     try:
         response = requests.get(url)
