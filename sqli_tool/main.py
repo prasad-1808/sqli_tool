@@ -45,7 +45,7 @@ def scanner(url):
         wrong_status_code_eg = check_response.status_code
         sql_errors = ['sql','SQL','Sql','SELECT','select','sql_error']
 
-        print(f"Checking for error based sqli in {url}...\n",url)
+        print(f"Checking for error based sqli in {url}...\n")
         for payload in classic_payloads:
             form = {}
             for field in input_field_in_url:
